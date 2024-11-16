@@ -39,9 +39,13 @@ async def _generate_image(update: Update, prompt: str) -> None:
     chat_id = update.message.chat_id
     logger.info(f"[{chat_id}] Generating image for prompt [{prompt}]")
     await update.message.reply_text("Generating...")
-    image_url = await generate_image(prompt)
-    logger.info(f"[{chat_id}] Generated [{image_url}]")
-    await update.message.reply_photo(image_url)
+    response, valid = generate_image(prompt)
+    if valid:
+        logger.info(f"[{chat_id}] Generated [{response}]")
+        await update.message.reply_photo(response)
+    else:
+        logger.error(f"[{chat_id}] Failed image generation with error {response}")
+        await update.message.reply_text(response)
 
 
 async def start(update: Update, _: ContextTypes.DEFAULT_TYPE) -> None:
