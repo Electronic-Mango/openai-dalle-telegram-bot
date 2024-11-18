@@ -4,6 +4,7 @@ from os import getenv
 from dotenv import load_dotenv
 from loguru import logger
 from telegram import Update
+from telegram.constants import ChatAction
 from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes, MessageHandler
 from telegram.ext.filters import COMMAND, TEXT
 
@@ -36,9 +37,9 @@ async def regenerate_image(update: Update, context: ContextTypes.DEFAULT_TYPE) -
 
 
 async def _generate_image(update: Update, prompt: str) -> None:
+    await update.effective_chat.send_chat_action(ChatAction.UPLOAD_PHOTO)
     chat_id = update.message.chat_id
     logger.info(f"[{chat_id}] Generating image for prompt [{prompt}]")
-    await update.message.reply_text("Generating...")
     response, valid = generate_image(prompt)
     if valid:
         logger.info(f"[{chat_id}] Generated [{response}]")
